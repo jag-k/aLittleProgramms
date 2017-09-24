@@ -1,6 +1,7 @@
-#-*-coding:utf8;-*-
-#qpy:3
-#qpy:console
+# -*-coding:utf8;-*-
+# qpy:3
+# qpy:console
+
 
 def select(title="", *quest, numb=True, default=True, lang='eng'):
     if quest:
