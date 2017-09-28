@@ -1,5 +1,5 @@
 from urllib import request, parse
-from translateApiKey import apiKey  #https://translate.yandex.ru/developers/keys
+from translateApiKey import apiKey  # https://translate.yandex.ru/developers/keys
 
 
 def en(text):
