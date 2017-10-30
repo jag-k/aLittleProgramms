@@ -1,9 +1,9 @@
 # -*-coding:utf8;-*-
-# qpy:3
-# qpy:console
 
 
 def select(title="", *quest, numb=True, default=True, lang='eng', inpt=input, out=None):
+    YES = ['y', 'yes', 'д', 'да']
+    NO = ['n', 'no', 'н', 'нет']
     """
     :param title: Вопрос
     :param quest: Варианты ответа
@@ -37,9 +37,9 @@ def select(title="", *quest, numb=True, default=True, lang='eng', inpt=input, ou
                 return default
             elif t:
                 l = t.lower()
-                if l == 'y' or l == 'yes' or l == 'д' or l == 'да':
+                if l in YES:
                     return True
-                elif l == 'n' or l == 'no' or l == 'н' or l == 'нет':
+                elif l in NO:
                     return False
 
 
