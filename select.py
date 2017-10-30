@@ -44,6 +44,7 @@ def select(title="", *quest, numb=True, default=True, lang='eng', inpt=input, ou
 
 
 '''
+
 print(select('hate me?'))
 print(select('hate me?', default=False))
 print(select('question', 'do', 'you', 'hate', 'me?'))
