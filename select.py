@@ -2,8 +2,6 @@
 
 
 def select(title="", *quest, numb=True, default=True, lang='eng', inpt=input, out=None):
-    YES = ['y', 'yes', 'д', 'да']
-    NO = ['n', 'no', 'н', 'нет']
     """
     :param title: Вопрос
     :param quest: Варианты ответа
@@ -14,12 +12,15 @@ def select(title="", *quest, numb=True, default=True, lang='eng', inpt=input, ou
     :param out: Вывод (по умолчанию в консоль)
     :return: Bool (если в quest пусто) или (элемент quest, индекс элемента quest) (если в quest есть элементы)
     """
+    YES = ['y', 'yes', 'д', 'да']
+    NO = ['n', 'no', 'н', 'нет']
     if quest:
+        if len(quest) == 1: return quest[0], 0
         print(title+':', file=out) if title else False
         for i in range(len(quest)):
             print('\t{}{}'.format(str(i+1)+') ' if numb else "", quest[i]+(';' if i != len(quest) else '.')), file=out)
         while True:
-            t = inpt('1: ' if len(quest) == 1 else '1-'+str(len(quest))+': ')
+            t = inpt('1-'+str(len(quest))+': ')
             if t.isdigit():
                 if 0 < int(t) < len(quest)+1:
                     return quest[int(t)-1], int(t)-1
@@ -44,7 +45,6 @@ def select(title="", *quest, numb=True, default=True, lang='eng', inpt=input, ou
 
 
 '''
-
 print(select('hate me?'))
 print(select('hate me?', default=False))
 print(select('question', 'do', 'you', 'hate', 'me?'))
