@@ -1,4 +1,4 @@
-def check_input(condition, res=lambda x: x, prompt=None, prompt2=None):
+def check_input(condition=lambda x: x, res=lambda x: x, prompt=None, prompt2=None):
     if prompt is not None and prompt2 is None:
         prompt2 = prompt
     param = input(prompt)
