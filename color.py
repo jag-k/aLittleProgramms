@@ -1,4 +1,4 @@
-def color(text, *attributes, to_normal_end=True):
+def color(text='', *attributes, to_normal_end=True):
     """
         attributes
     0 - normal

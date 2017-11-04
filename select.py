@@ -12,10 +12,11 @@ def select(title="", *quest, numb=True, default=True, lang='eng', inpt=input, ou
     :param out: Вывод (по умолчанию в консоль)
     :return: Bool (если в quest пусто) или (элемент quest, индекс элемента quest) (если в quest есть элементы)
     """
-    YES = ['y', 'yes', 'д', 'да']
-    NO = ['n', 'no', 'н', 'нет']
+    yes = ['y', 'yes', 'д', 'да']
+    no = ['n', 'no', 'н', 'нет']
     if quest:
-        if len(quest) == 1: return quest[0], 0
+        if len(quest) == 1:
+            return quest[0], 0
         print(title+':', file=out) if title else False
         for i in range(len(quest)):
             print('\t{}{}'.format(str(i+1)+') ' if numb else "", quest[i]+(';' if i != len(quest) else '.')), file=out)
@@ -37,10 +38,9 @@ def select(title="", *quest, numb=True, default=True, lang='eng', inpt=input, ou
             if not t:
                 return default
             elif t:
-                l = t.lower()
-                if l in YES:
+                if t.lower() in yes:
                     return True
-                elif l in NO:
+                elif t.lower() in no:
                     return False
 
 
