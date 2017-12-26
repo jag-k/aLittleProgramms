@@ -1,17 +1,33 @@
-from pprint import pprint
-
-
 def r_dictionary(word):
     from urllib import request, parse
     word = word.replace('?', '%3F')
-    raw_data = str(request.urlopen('http://gramota.ru/slovari/dic/?word=%s&all=x' % parse.quote_plus(word)).read(),
+    link = 'http://gramota.ru/slovari/dic/?word=%s&all=x' % parse.quote_plus(word)
+    raw_data = str(request.urlopen(link).read(),
                    encoding='windows-1251').split('</form>')[1].split('<div class="gray">')[0]
 
     data = ''.join(filter(lambda x: x not in ['\n', '\t'], raw_data)
                    ).rstrip('<div class="clear"></div><div class="gap-saver"></div></div>').split('<h2>')
-    l = []
+    pre_res = {}
+    res = {}
+
+    dicts_name = {
+        'Орфографический словарь': 'lop',
+        'Большой толковый словарь': 'bts',
+        'Управление в русском языке': 'rose',
+        'Русское словесное ударение': 'zarva',
+        'Словарь имён собственных': 'ag',
+        'Словарь синонимов': 'abr',
+        'Синонимы: краткий справочник': 'sqr',
+        'Словарь антонимов': 'lv',
+        'Словарь методических терминов': 'az',
+        'Словарь русских имён': 'petr'
+    }
 
     correct = True
+
+    def remove_html_tags(s: str):
+        return ' '.join(filter(lambda x: x, s.replace('<', '>').split('>')[::2]))
+
 
     def format_replace(s: str, decorate=True):
         r = [
@@ -31,8 +47,8 @@ def r_dictionary(word):
             ('</span>', '\x1b[1m')
         ]
         for before, after in r:
-            s = s.replace(before, after if decorate else '')
-        return s
+            s = s.replace(before, after if decorate else ('' if after.startswith('\x1b[') else after))
+        return remove_html_tags(s).strip()
 
     for i in filter(lambda x: x, data):
         dic = {}
@@ -41,13 +57,15 @@ def r_dictionary(word):
             continue
 
         elif not correct:
-            for j in i.split('Похожие слова:</h2>')[1].split('<p style="padding-left:50px">'):
+            l = []
+            for j in filter(lambda x: x, i.split('Похожие слова:</h2>')[1].split('<p style="padding-left:50px">')):
                 dic = {}
                 url, text = j.split('<a href="')[1].split('&all=x">')
-                dic['url'] = url+'&all=x'
+                dic['url'] = 'http://gramota.ru%s&all=x' % url
                 dic['decorated_text'] = format_replace(text)
                 dic['text'] = format_replace(text, False)
                 l.append(dic)
+            res['sim_world'] = l
 
         else:
 
@@ -63,6 +81,18 @@ def r_dictionary(word):
             else:
                 dic['decorated_text'] = format_replace(text)
                 dic['text'] = format_replace(text, False)
-            l.append(dic)
+            pre_res[dicts_name[dic['name']]] = dic
 
-    return l
+    if not res:
+        try:
+            res['word'] = pre_res['lop']['text'].split(',')[0]
+            res['dicts'] = pre_res
+            res['url'] = link
+        except Exception:
+            return {}
+    return res
+
+
+if __name__ == '__main__':
+    from pprint import pprint
+    pprint(r_dictionary(input('Введите слово для проверки: ')))
