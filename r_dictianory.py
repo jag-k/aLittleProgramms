@@ -1,8 +1,10 @@
 def r_dictionary(word):
     from urllib import request, parse
-    word = word.replace('?', '%3F')
+    input_word = word
+    word = input_word.replace('?', '%3F')
     link = 'http://gramota.ru/slovari/dic/?word=%s&all=x' % parse.quote_plus(word)
-    raw_data = str(request.urlopen(link).read(),
+    req = request.urlopen(link)
+    raw_data = str(req.read(),
                    encoding='windows-1251').split('</form>')[1].split('<div class="gray">')[0]
 
     data = ''.join(filter(lambda x: x not in ['\n', '\t'], raw_data)
@@ -82,14 +84,17 @@ def r_dictionary(word):
                 dic['decorated_text'] = format_replace(text)
                 dic['text'] = format_replace(text, False)
             pre_res[dicts_name[dic['name']]] = dic
-
     if not res:
-        try:
+        if not pre_res:
+            return {'error': 1, 'msg': 'The word "%s" does not russian' % input_word}
+
+        if 'lop' in pre_res and 'text' in pre_res and type(pre_res['lop']['text']) is str:
             res['word'] = pre_res['lop']['text'].split(',')[0]
             res['dicts'] = pre_res
             res['url'] = link
-        except Exception:
-            return {}
+        else:
+            return {'error': 2, 'msg': 'The word "%s" does not exist' % input_word}
+
     return res
 
 
