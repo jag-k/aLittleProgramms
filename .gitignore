@@ -4,3 +4,5 @@ speakerKey.py
 translateApiKey.py
 for_tests.py
 audio/
+login.txt
+pwd.txt
