@@ -1,5 +1,6 @@
 from translateApiKey import apiKey  # https://translate.yandex.ru/developers/keys
 
+
 class Translate:
     def __init__(self, text, default_lang='en', from_lang=None, api=apiKey):
         from urllib import parse
@@ -14,11 +15,15 @@ class Translate:
         lang = filter(lambda x: x is not None, [to_lang, self.from_lang])
         url = 'https://translate.yandex.net/api/v1.5/tr.json/translate?key=%s&text=%s&lang=%s' % (self.api, self.text,
                                                                                                   '-'.join(lang))
-        tran = request.urlopen(url)
-        return json.loads(str(tran.read(), encoding='utf-8'))
+        r = json.loads(str(request.urlopen(url).read(), encoding='utf-8'))
+        res = {}
+        for i in r:
+            if i != 'code':
+                res[i] = r[i]
+        return res
 
     def __str__(self):
-        return '\n'.join(eval("self." + self.default_lang)['text'])
+        return '\n'.join(self.__getattr__(self.default_lang)['text'])
 
 
 if __name__ == '__main__':
