@@ -10,7 +10,7 @@ def battery(mode=''):
         name, val = i.split(': ')
         name = name.split()
         name[1] = int(name[1])
-        val = val.split(', ')
+        val = list(map(lambda x: int(x[:-1]) if x[-1] == '%' and x[:-1].isdigit() else x, val.split(', ')))
         if name[0] in res:
             if name[1] in res[name[0]]:
                 res[name[0]][name[1]] += val
