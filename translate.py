@@ -28,4 +28,5 @@ class Translate:
 
 if __name__ == '__main__':
     t = Translate(input('Введите слово для перевода: ').replace('\\n', '\n'))
-    print(t)
+    print("RU:", t.ru['text'][0])
+    print("EN:", t.en['text'][0])

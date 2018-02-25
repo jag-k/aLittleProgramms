@@ -44,11 +44,10 @@ def select(title="", *quest, numb=True, default=True, lang='eng', inpt=input, ou
                     return False
 
 
-'''
-print(select('hate me?'))
-print(select('hate me?', default=False))
-print(select('question', 'do', 'you', 'hate', 'me?'))
-print(select('question', 'do', 'you', 'hate', 'me?', numb=False))
-print(select('question', 'do', numb=False))
-print(select('question', 'do'))
-'''
+if __name__ == '__main__':
+    print("\x1b[32m%s\x1b[0m" % (select('hate me?'), ))
+    print("\x1b[32m%s\x1b[0m" % (select('hate me?', default=False), ))
+    print("\x1b[32m%s\x1b[0m" % (select('question', 'do', 'you', 'hate', 'me?'), ))
+    print("\x1b[32m%s\x1b[0m" % (select('question', 'do', 'you', 'hate', 'me?', numb=False), ))
+    print("\x1b[32m%s\x1b[0m" % (select('question', 'do', numb=False), ))
+    print("\x1b[32m%s\x1b[0m" % (select('question', 'do'), ))

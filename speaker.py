@@ -2,7 +2,8 @@ from speakerKey import KEY
 
 
 class Speak:
-    def __init__(self, text, file_format='mp3', quality='hi', lang='ru-RU', speaker='alyss', speed=1.0, emotion='neutral', key=KEY):
+    def __init__(self, text, file_format='mp3', quality='hi', language='ru-RU', speaker='alyss', speed=1.0,
+                 emotion='neutral', key=KEY):
         """
         :param text:
         Текст, который нужно озвучить. Для передачи слов-омографов используйте + перед ударной гласной.
@@ -22,7 +23,7 @@ class Speak:
 
         Обратите внимание, параметр quality влияет на характеристики аудио только если file_format=wav.
 
-        :param lang:
+        :param language:
         Допустимые значения: ru-RU — русский язык, en-US — английский язык, uk-UK — украинский язык, tr-TR — турецкий язык.
         Язык не определяется автоматически. Значение параметра по умолчанию: ru‑RU.
 
@@ -65,9 +66,9 @@ class Speak:
                 if type(text) is str:
                     open('.speaker_text.nomedia', 'w').write(text)
                     if sum(1 for _ in open('.speaker_text.nomedia', 'rb').read()) > 2000:
-                        raise TextError
+                        raise SystemExit(TextError)
                 else:
-                    raise TextError
+                    raise SystemExit(TextError)
                 return True
             finally:
                 os.remove(os.path.join(os.path.abspath(os.path.dirname(__file__)), '.speaker_text.nomedia'))
@@ -78,7 +79,7 @@ class Speak:
 
             formats = ['mp3', 'wav', 'opus']
             if file_format not in formats:
-                raise FormatError
+                raise SystemExit(FormatError)
             return ['.mp3', '.wav', '.ogg'][formats.index(file_format)]
 
         def check_quality():
@@ -86,23 +87,29 @@ class Speak:
                 pass
 
             if quality not in ['lo', 'hi']:
-                raise QualityError
+                raise SystemExit(QualityError)
             return True
 
         def check_lang():
             class LangError(Exception):
                 pass
+            
+            lang_list = ['ru-RU', 'en-US', 'uk-UK', 'tr-TR']
 
-            if lang not in ['ru-RU', 'en-US', 'uk-UK', 'tr-TR']:
-                raise LangError
-            return True
+            for i in lang_list:
+                if i[:2] == language.lower():
+                    return i
+
+            if language not in lang_list:
+                raise SystemExit(LangError)
+            return language
 
         def check_speaker():
             class SpeakerError(Exception):
                 pass
 
             if speaker not in ['jane', 'oksana', 'alyss', 'omazh', 'zahar', 'ermil']:
-                raise SpeakerError
+                raise SystemExit(SpeakerError)
             return True
 
         def check_speed():
@@ -111,9 +118,9 @@ class Speak:
 
             if type(speed) is int or type(speed) is float:
                 if not (0.1 <= speed <= 3):
-                    raise SpeedError
+                    raise SystemExit(SpeedError)
             else:
-                raise SpeedError
+                raise SystemExit(SpeedError)
             return True
 
         def check_emotion():
@@ -121,30 +128,42 @@ class Speak:
                 pass
 
             if emotion not in ['evil', 'neutral', 'good', 'mixed']:
-                raise EmotionError
+                raise SystemExit(EmotionError)
             return True
 
-        if all([check_text(), check_speed(), check_speaker(), check_speaker(), check_lang(), check_emotion(),
+        language = check_lang()
+
+        if all([check_text(), check_speed(), check_speaker(), check_speaker(), check_emotion(),
                 check_format(), check_quality()]):
             file_name = ''.join(map(lambda x: ('_' if x.isspace() else '') if not x.isalnum() else x, text))[:35]
             file_name += '(' + speaker + ')' + check_format()
-            params = {'text': text, 'format': file_format, 'quality': quality, 'lang': lang, 'speaker': speaker,
+            params = {'text': text, 'format': file_format, 'quality': quality, 'language': language, 'speaker': speaker,
                       'speed': speed, 'emotion': emotion, 'key': key}
             url = 'https://tts.voicetech.yandex.net/generate?' + urlencode(params)
             self.file_name, self.url = file_name, url
 
     def __bytes__(self):
         from urllib.request import urlopen
-        return bytes([i for i in urlopen(self.url).read()])
+        print(self.url)
+        url = urlopen(self.url)
+        return bytes(list(url.read()))
 
-    def save(self, dir='', file_name=None):
+    def save(self, dir=None, file_name=None):
         import os
+        if dir is None:
+            dir = os.getcwd()
         file_name = self.file_name if file_name is None else file_name+self.file_name[-4:]
         with open(os.path.join(dir, file_name), 'wb') as file:
             file.write(bytes(self))
-        return (dir, file_name) if dir else (os.getcwd(), file_name)
+        return dir, file_name
 
 
+if __name__ == '__main__':
+    from translate import Translate
+    text = input('Введите текст: ')
+    lang = Translate(text).en['lang'][:2]
+    s = Speak(text, 'ogg', language=lang, speaker='jane')
+    print(bytes(s))
 '''
 s = Speak('Привет, как дел+а? А наш текст готов)))', file_format='ogg', speaker='jane')
 print(s.save('audio/', '1'))
